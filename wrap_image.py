@@ -161,6 +161,7 @@ if __name__ == '__main__':
     parser.add_argument('-ir', '--inner_radius', type=float, help='Radius of minimum image value (float)', default=70.0)
     parser.add_argument('-or', '--outer_radius', type=float, help='Radius of maximum image value (float)', default=80.0)
     parser.add_argument('-hr', '--hole_radius', type=float, help='Radius of hole (float - use negative for no hole)', default=-1.0)
+    parser.add_argument('-ds', '--downscale', type=float, help='Downscale the image by this factor prior to processing', default=1.0)
     parser.add_argument('-z', '--z_scale', type=float, help='Scale value for Z height (float)', default=1.0)
     parser.add_argument('-rx', '--reverse_x', type=bool, help='Reverse the x axis (bool - i.e. scan clock verses counter-clockwise)', default=False)
     parser.add_argument('-iz', '--invert_offsets', type=bool, help='Invert offset (bool - i.e. darker colors in image stick out further)', default=False)
@@ -172,6 +173,7 @@ if __name__ == '__main__':
     inner_radius = args.inner_radius
     outer_radius = args.outer_radius
     hole_radius = args.hole_radius
+    downscale = args.downscale
     z_scale = args.z_scale
     stl_type = 'txt' if args.stl_type[0]=='txt' else 'bin'
     add_hole  = True if hole_radius > 0.0 else False
@@ -184,6 +186,10 @@ if __name__ == '__main__':
     convert_to = 'L'
     _ = Image.open(img_name)
     im = _.convert(convert_to)
+
+    if downscale != 1:
+        im = im.resize((int(im.width / downscale), int(im.height / downscale)), Image.BILINEAR)
+        z_scale *= downscale
 
     with pystl.PySTL(stl_name,  bin=True) as stl:
         vertices = calc_vertices(im, inner_radius, outer_radius, z_scale, invert_offsets=invert_offsets, reverse_x=reverse_x)

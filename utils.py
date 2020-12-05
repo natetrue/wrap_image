@@ -32,7 +32,7 @@ def calc_offset(c, max_c, scale, invert_offsets=False):
     if invert_offsets:
         return ((mc - fc) / mc) * s
     else:
-        return ((fc - mc) / mc) * s
+        return (fc / mc) * s
 
 
 def lerp(low, high, a):
